@@ -134,20 +134,20 @@ def apply_SMOGN(x, y):
     data = pd.concat([x, y], axis=1, 
                      ignore_index=True)
     y_col_number = data.shape[1]-1
-    data = data.rename(columns = {y_col_number: 'airline_sentiment_confidence'})
+    data = data.rename(columns = {y_col_number: 'airline_sentiment_confidence'}).reset_index()
     df_smogn = smogn.smoter(
     
-    ## main arguments
+    # main arguments
     data = data,           ## pandas dataframe
     y = 'airline_sentiment_confidence',          ## string ('header name')
     k = 9,                    ## positive integer (k < n)
     samp_method = 'extreme',  ## string ('balance' or 'extreme')
 
-    ## phi relevance arguments
-    rel_thres = 0.80,         ## positive real number (0 < R < 1) #0.5
+    # phi relevance arguments
+    rel_thres = 0.5,         ## positive real number (0 < R < 1) #0.5
     rel_method = 'auto',      ## string ('auto' or 'manual')
-    rel_xtrm_type = 'high',   ## string ('low' or 'both' or 'high')
-    rel_coef = 2.25           ## positive real number (0 < R) #1.5
+    rel_xtrm_type = 'both',   ## string ('low' or 'both' or 'high')
+    rel_coef = 1#2.25           ## positive real number (0 < R) #1.5
 )
     
     x_oversampled = df_smogn['text']
