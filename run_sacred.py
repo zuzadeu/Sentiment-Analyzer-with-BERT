@@ -27,6 +27,7 @@ import itertools
 #"dropout_rate":0.06
 #"epochs":45
 
+
 dense_1_nodes=[32, 64, 128, 256, 512, 1024] 
 dense_2_nodes=[32, 64, 128, 256, 512, 1024] 
 dense_3_nodes=[32, 64, 128, 256, 512, 1024] 
