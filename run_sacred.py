@@ -28,6 +28,18 @@ import itertools
 #"epochs":45
 
 
+#"batch_size":256
+#"dense_1_nodes":32
+#"dense_2_nodes":32
+#"dense_3_nodes":32
+#"dense_4_nodes":1024
+#"dropout_1_size":0.06
+#"dropout_2_size":0.1
+#"dropout_3_size":0.3
+#"dropout_4_size":0.08
+#"dropout_rate":0.06
+#"epochs":45
+
 dense_1_nodes=[32, 64, 128, 256, 512, 1024] 
 dense_2_nodes=[32, 64, 128, 256, 512, 1024] 
 dense_3_nodes=[32, 64, 128, 256, 512, 1024] 
