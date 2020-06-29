@@ -40,17 +40,19 @@ import itertools
 #"dropout_rate":0.06
 #"epochs":45
 
-dense_1_nodes=[32, 64, 128, 256, 512, 1024] 
-dense_2_nodes=[32, 64, 128, 256, 512, 1024] 
-dense_3_nodes=[32, 64, 128, 256, 512, 1024] 
-dense_4_nodes=[32, 64, 128, 256, 512, 1024] 
-dropout_1_size=[0.06, 0.08, 0.1, 0.2, 0.3] 
-dropout_2_size=[0.06, 0.08, 0.1, 0.2, 0.3] 
-dropout_3_size=[0.06, 0.08, 0.1, 0.2, 0.3] 
-dropout_4_size=[0.06, 0.08, 0.1, 0.2, 0.3] 
-dropout_rate_values = [0.06, 0.08]
-epochs_values = [45, 50, 55, 60, 65]
-batch_size_values = [256, 512]
+
+
+dense_1_nodes=[512, 256, 128, 64, 32] 
+dense_2_nodes=[512, 256, 128, 64, 32] 
+dense_3_nodes=[512, 256, 128, 64, 32]  
+dense_4_nodes=[512, 256, 128, 64, 32] 
+dropout_1_size=[0.1, 0.2, 0.3]  
+dropout_2_size=[0.1, 0.2, 0.3] 
+dropout_3_size=[0.1, 0.2, 0.3] 
+dropout_4_size=[0.1, 0.2, 0.3]  
+dropout_rate_values = [0.1, 0.2, 0.3] 
+epochs_values = [30]
+batch_size_values = [256, 512, 128, 64]
 
 for dropout_rate, epochs, batch_size, dense_1_nodes, dense_2_nodes, dense_3_nodes, dense_4_nodes, dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size in itertools.product(dropout_rate_values, epochs_values, batch_size_values, dense_1_nodes, dense_2_nodes, dense_3_nodes, dense_4_nodes,dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size):
     ex.run(config_updates={'dropout_rate': dropout_rate, 'batch_size': batch_size, 'epochs': epochs,
