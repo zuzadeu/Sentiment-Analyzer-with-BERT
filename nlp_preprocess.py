@@ -97,7 +97,7 @@ def remove_special(df, column):
     
     
 def train_valid_test_split(df):
-    y = df['airline_sentiment_confidence']
+    y = df['value']
     x = df['text']
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=test_size, 
                                                         random_state=random_state)
@@ -113,7 +113,7 @@ def max_sequence_length(train_x):
 
 
 def BERT_embeddings(train_x, test_x, valid_x, valid_y, max_seq_len):
-    bc = BertClient()
+    bc = BertClient(ip='192.168.1.43')
     train_seq_x = bc.encode(list(train_x.values))
     test_seq_x = bc.encode(list(test_x.values))
     valid_seq_x = bc.encode(list(valid_x.values))
@@ -176,7 +176,9 @@ def save_dataframes(train_x, train_y, test_x, test_y, valid_x, valid_y):
     
 def __main__():
     print('Text cleaning...')
-    df = pd.read_csv('Tweets.csv', encoding='utf-8')
+    sentences = pd.read_csv('dictionary.txt', encoding='utf-8', delimiter = '|', names = ['text', 'id'])
+    labels = pd.read_csv('sentiment_labels.txt', encoding='utf-8', delimiter = '|', names = ['id', 'value'])
+    df = sentences.merge(labels, on='id', how='left')
     df = remove_numbers(df, 'text')
     df = remove_emails(df, 'text')
     df = remove_html(df, 'text')
@@ -198,9 +200,10 @@ def __main__():
         train_x = pd.read_pickle('bert_train_x.pkl')
         test_x = pd.read_pickle('bert_test_x.pkl') 
         valid_x = pd.read_pickle('bert_valid_x.pkl')
-    print('Padding...')
+    #print('Padding...')
     #train_x, valid_x = padding(train_x, valid_x, max_seq_len)
-    train_x, train_y, valid_x, valid_y = oversample_train_valid(train_x, train_y, valid_x, valid_y)
+    #train_x, train_y, valid_x, valid_y = oversample_train_valid(train_x, train_y, valid_x, valid_y)
+    print('Save...')
     save_dataframes(train_x, train_y, test_x, test_y, valid_x, valid_y)
     
 __main__()
