@@ -1,0 +1,23 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Sentiment Analyzer</title>
+  <meta name="description" content="Calculate sentiment score of any text">
+  <meta name="author" content="Zyzus">
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <script src="https://unpkg.com/colorsys@1.0.11/colorsys.js" type="module"></script>
+  <script src="index.js"></script>
+  <textarea id="text_input" name="text_input" rows="4" cols="50" placeholder="Please enter the text" oninput="textChanged(this.value)"></textarea>
+  <div id="circle">
+      <div id="score">---</div>
+  </div>
+</body>
+</html>
