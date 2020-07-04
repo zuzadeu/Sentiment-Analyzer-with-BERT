@@ -8,11 +8,16 @@ import pandas as pd
 import numpy as np
 import os
 from bert_serving.client import BertClient
+from transformers import MobileBertTokenizer
 from imblearn.over_sampling import SMOTE
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 import smogn
 import seaborn
+from common import *
+import logging
+
+logging.basicConfig(level=logging.ERROR)
 
 test_size = 0.1
 valid_size = 0.2
@@ -20,81 +25,6 @@ random_state = 42
 
 np.random.seed(1)
 
-def remove_numbers(df, column):
-    """
-    Replace digits with "numtoken"
-    Parameters
-    ----------
-    df : data frame
-    column : column name with input text
-    
-    Returns
-    -------
-    df : data frame with cleaned text
-    """
-    reg = r"[0-9][0-9]*"
-    token = "numtoken"
-    df[column] = df[column].str.replace(reg, token)
-    return df
-    
-    
-def remove_emails(df, column):
-    """
-    Replace emails with "emtoken"
-    Parameters
-    ----------
-    df : data frame
-    column : column name with input text
-    
-    Returns
-    -------
-    df : data frame with cleaned text
-    """
-    reg = r"[A-Za-z.]*@[a-z]*\-*[a-z]*.com|[A-Za-z\-]*.com"
-    token = "emtoken"
-    df[column] = df[column].str.replace(reg, token)
-    return df
-        
-    
-def remove_html(df, column):
-    """
-    Replace html code with "htmltoken"
-    Parameters
-    ----------
-    df : data frame
-    column : column name with input text
-    
-    Returns
-    -------
-    df : data frame with cleaned text
-    """
-    reg = r"<[/]?(((http|ftp)[s]?://)?www.|((http|ftp)[s]?://)|mailto:|ro_)(?:[a-zA-Z]|[0-9]|[$-=?-_@.&+]|[!*\(\),]|\
-        (?:%[0-9a-fA-F][0-9a-fA-F]))+"
-    token = "htmltoken"
-    df[column] = df[column].str.replace(reg, token)
-    reg = "[/]?(((http|ftp)[s]?://)?www.|((http|ftp)[s]?://)|mailto:|ro_)(?:[a-zA-Z]|[0-9]|\
-        [$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
-    df[column] = df[column].str.replace(reg, token)
-    return df
-        
-    
-def remove_special(df, column):
-    """
-    Replace lines and tabs with space
-    Parameters
-    ----------
-    df : data frame
-    column : column name with input text
-    
-    Returns
-    -------
-    df : data frame with cleaned text
-    """
-    reg = r"\n|\t"
-    space = " "
-    df[column] = df[column].str.replace(reg, space)
-    return df
-    
     
 def train_valid_test_split(df):
     y = df['value']
@@ -108,6 +38,7 @@ def train_valid_test_split(df):
     return train_x, train_y, valid_x, valid_y, test_x, test_y
   
     
+
 def max_sequence_length(train_x):
     return int(train_x.str.split().str.len().quantile(0.9))
 
@@ -121,6 +52,19 @@ def BERT_embeddings(train_x, test_x, valid_x, valid_y, max_seq_len):
     train_x = pd.DataFrame(data=train_seq_x, index=train_x.index)
     test_x = pd.DataFrame(data=test_seq_x, index=test_x.index)
     valid_x = pd.DataFrame(data=valid_seq_x, index=valid_x.index)
+    return train_x, test_x, valid_x
+
+
+def BERT_embeddings2(train_x, test_x, valid_x, valid_y, max_seq_len):
+    tokenizer = MobileBertTokenizer.from_pretrained("bert-base-uncased")
+
+    train_seq_x = tokenizer.batch_encode_plus(train_x.values, max_length=max_seq_len, pad_to_max_length=True, truncation=True)['input_ids']
+    test_seq_x = tokenizer.batch_encode_plus(test_x.values, max_length=max_seq_len, pad_to_max_length=True, truncation=True)['input_ids']
+    valid_seq_x = tokenizer.batch_encode_plus(valid_x.values, max_length=max_seq_len, pad_to_max_length=True, truncation=True)['input_ids']
+    
+    train_x = pd.DataFrame(data=train_seq_x)#, index=train_x.index)
+    test_x = pd.DataFrame(data=test_seq_x)#, index=test_x.index)
+    valid_x = pd.DataFrame(data=valid_seq_x)#, index=valid_x.index)
     return train_x, test_x, valid_x
 
     
@@ -179,31 +123,37 @@ def __main__():
     sentences = pd.read_csv('dictionary.txt', encoding='utf-8', delimiter = '|', names = ['text', 'id'])
     labels = pd.read_csv('sentiment_labels.txt', encoding='utf-8', delimiter = '|', names = ['id', 'value'])
     df = sentences.merge(labels, on='id', how='left')
-    df = remove_numbers(df, 'text')
-    df = remove_emails(df, 'text')
-    df = remove_html(df, 'text')
-    df = remove_special(df, 'text')
+    df = text_cleaning(df, 'text')
     print('Train, test, valid split...')
     train_x, train_y, valid_x, valid_y, test_x, test_y = train_valid_test_split(df)
     #print(train_x.head(5))
     #print(train_x.columns)
     max_seq_len = max_sequence_length(train_x)
     print(f'Majority of sentences contain {max_seq_len} words.')
-    if os.path.exists('bert_train_x.pkl') == False:
+
+    # if os.path.exists('bert_train_x.pkl') == False:
+    #     print('Bert encoding...')
+    #     train_x, test_x, valid_x = BERT_embeddings(train_x, test_x, valid_x, valid_y, max_seq_len)
+    #     train_x.to_pickle('bert_train_x.pkl')
+    #     test_x.to_pickle('bert_test_x.pkl') 
+    #     valid_x.to_pickle('bert_valid_x.pkl')
+    # else:
+    #     print('Bert embeddings loading...')
+    #     train_x = pd.read_pickle('bert_train_x.pkl')
+    #     test_x = pd.read_pickle('bert_test_x.pkl') 
+    #     valid_x = pd.read_pickle('bert_valid_x.pkl')
+    # #print('Padding...')
+    # #train_x, valid_x = padding(train_x, valid_x, max_seq_len)
+    # #train_x, train_y, valid_x, valid_y = oversample_train_valid(train_x, train_y, valid_x, valid_y)
+    # print('Save...')
+    # save_dataframes(train_x, train_y, test_x, test_y, valid_x, valid_y)
+
+    if os.path.exists('train_x.pkl') == False:
         print('Bert encoding...')
-        train_x, test_x, valid_x = BERT_embeddings(train_x, test_x, valid_x, valid_y, max_seq_len)
-        train_x.to_pickle('bert_train_x.pkl')
-        test_x.to_pickle('bert_test_x.pkl') 
-        valid_x.to_pickle('bert_valid_x.pkl')
+        train_x, test_x, valid_x = BERT_embeddings2(train_x, test_x, valid_x, valid_y, max_seq_len)
+        save_dataframes(train_x, train_y, test_x, test_y, valid_x, valid_y)
     else:
         print('Bert embeddings loading...')
-        train_x = pd.read_pickle('bert_train_x.pkl')
-        test_x = pd.read_pickle('bert_test_x.pkl') 
-        valid_x = pd.read_pickle('bert_valid_x.pkl')
-    #print('Padding...')
-    #train_x, valid_x = padding(train_x, valid_x, max_seq_len)
-    #train_x, train_y, valid_x, valid_y = oversample_train_valid(train_x, train_y, valid_x, valid_y)
-    print('Save...')
-    save_dataframes(train_x, train_y, test_x, test_y, valid_x, valid_y)
-    
+    print('Saved!')
+
 __main__()
