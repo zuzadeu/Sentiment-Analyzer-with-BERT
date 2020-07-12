@@ -26,13 +26,13 @@ ex.observers.append(MongoObserver(
     url='mongodb://192.168.1.2:27017'))
     
 def load_model():
-    train_x = pickle.load(open("train_x.pkl", 'rb'))
+    train_x = pickle.load(open("data/train_x.pkl", 'rb'))
     print(train_x)
-    train_y = pickle.load(open("train_y.pkl", 'rb'))
-    test_x = pickle.load(open("test_x.pkl", 'rb'))
-    test_y = pickle.load(open("test_y.pkl", 'rb'))
-    valid_x = pickle.load(open("valid_x.pkl", 'rb'))
-    valid_y = pickle.load(open("valid_y.pkl", 'rb'))
+    train_y = pickle.load(open("data/train_y.pkl", 'rb'))
+    test_x = pickle.load(open("data/test_x.pkl", 'rb'))
+    test_y = pickle.load(open("data/test_y.pkl", 'rb'))
+    valid_x = pickle.load(open("data/valid_x.pkl", 'rb'))
+    valid_y = pickle.load(open("data/valid_y.pkl", 'rb'))
     return train_x, train_y, test_x, test_y, valid_x, valid_y
 
 def build_model(train_x, batch_size=128,
@@ -64,7 +64,7 @@ def build_model(train_x, batch_size=128,
 
 def model_testing(test_x, test_y, model, history):
     pred_y = model.predict(test_x)
-    np.savetxt("pred_y.csv", pred_y, delimiter=",")
+    np.savetxt("data/pred_y.csv", pred_y, delimiter=",")
     mae = mean_absolute_error(pred_y, test_y)
     mse = mean_squared_error(pred_y, test_y)
     print(f'MSE = {mse}')
@@ -76,7 +76,6 @@ def model_testing(test_x, test_y, model, history):
 
     ex.log_scalar("MAE", mae)
     ex.log_scalar("MSE", mse)
-
 
 @ex.config
 def cfg():
