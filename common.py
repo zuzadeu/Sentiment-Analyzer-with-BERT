@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 from bert_serving.client import BertClient
+import tensorflow as tf
 
 def remove_numbers(df, column):
     """
@@ -107,6 +108,7 @@ def text_cleaning(df, column):
     df = remove_nonwords(df, column)
     df = remove_empty_rows(df, column)
     return df
+
 
 def model_inference(model, sentence):
     bc = BertClient()
