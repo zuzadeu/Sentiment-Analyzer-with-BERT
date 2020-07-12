@@ -50,16 +50,16 @@ def BERT_embeddings(train_x, test_x, valid_x, valid_y, max_seq_len):
 
 
 def save_dataframes(train_x, train_y, test_x, test_y, valid_x, valid_y):
-    train_x.to_pickle('train_x.pkl')
-    test_x.to_pickle('test_x.pkl') 
-    valid_x.to_pickle('valid_x.pkl')
-    train_y.to_pickle('train_y.pkl')
-    test_y.to_pickle('test_y.pkl') 
-    valid_y.to_pickle('valid_y.pkl')
+    train_x.to_pickle('data/train_x.pkl')
+    test_x.to_pickle('data/test_x.pkl') 
+    valid_x.to_pickle('data/valid_x.pkl')
+    train_y.to_pickle('data/train_y.pkl')
+    test_y.to_pickle('data/test_y.pkl') 
+    valid_y.to_pickle('data/valid_y.pkl')
     
     
 def __main__():
-    if os.path.exists('train_x.pkl') == False:
+    if os.path.exists('data/train_x.pkl') == False:
         print('Text cleaning...')
         sentences = pd.read_csv('dictionary.txt', encoding='utf-8', delimiter = '|', names = ['text', 'id'])
         labels = pd.read_csv('sentiment_labels.txt', encoding='utf-8', delimiter = '|', names = ['id', 'value'])
