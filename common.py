@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from bert_serving.client import BertClient
 import tensorflow as tf
+import os
 
 def remove_numbers(df, column):
     """
@@ -114,7 +115,7 @@ def model_inference(model, sentence):
     bc = BertClient()
     sentence = bc.encode(sentence)
     score = model.predict(sentence)
-    pred_y = np.loadtxt("data/pred_y.csv", delimiter=",")
+    pred_y = np.loadtxt(os.path.normpath("data/pred_y.csv"), delimiter=",")
     min_score, max_score = min_max_mean_sentiment(pred_y)
     norm_score = (score - min_score)/(max_score - min_score)
     return norm_score
