@@ -114,7 +114,7 @@ def model_inference(model, sentence):
     bc = BertClient()
     sentence = bc.encode(sentence)
     score = model.predict(sentence)
-    pred_y = np.loadtxt("pred_y.csv", delimiter=",")
+    pred_y = np.loadtxt("data/pred_y.csv", delimiter=",")
     min_score, max_score = min_max_mean_sentiment(pred_y)
     norm_score = (score - min_score)/(max_score - min_score)
     return norm_score
