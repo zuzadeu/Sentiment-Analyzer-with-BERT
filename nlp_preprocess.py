@@ -61,8 +61,8 @@ def save_dataframes(train_x, train_y, test_x, test_y, valid_x, valid_y):
 def __main__():
     if os.path.exists('data/train_x.pkl') == False:
         print('Text cleaning...')
-        sentences = pd.read_csv('dictionary.txt', encoding='utf-8', delimiter = '|', names = ['text', 'id'])
-        labels = pd.read_csv('sentiment_labels.txt', encoding='utf-8', delimiter = '|', names = ['id', 'value'])
+        sentences = pd.read_csv('data/dictionary.txt', encoding='utf-8', delimiter = '|', names = ['text', 'id'])
+        labels = pd.read_csv('data/sentiment_labels.txt', encoding='utf-8', delimiter = '|', names = ['id', 'value'])
         df = sentences.merge(labels, on='id', how='left')
         df = text_cleaning(df, 'text')
         print('Train, test, valid split...')
