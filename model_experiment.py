@@ -24,7 +24,6 @@ from sacred.observers import MongoObserver
 ex = Experiment()
 ex.observers.append(MongoObserver(
     url='mongodb://192.168.1.2:27017'))
-    #url='mongodb://mongo_user:mongo_password@localhost:27017/?authMechanism=SCRAM-SHA-1'))
     
 def load_model():
     train_x = pickle.load(open("train_x.pkl", 'rb'))
@@ -36,9 +35,9 @@ def load_model():
     valid_y = pickle.load(open("valid_y.pkl", 'rb'))
     return train_x, train_y, test_x, test_y, valid_x, valid_y
 
-def build_model(train_x, batch_size=128, dropout_rate=0.3,
+def build_model(train_x, batch_size=128,
                 dense_1_nodes=256, dense_2_nodes=256, dense_3_nodes=256, dense_4_nodes=256,
-                dropout_1_size=0.1, dropout_2_size=0.1, dropout_3_size=0.1, dropout_4_size=0.1):
+                dropout_1_size=0.1, dropout_2_size=0.1, dropout_3_size=0.1, dropout_4_size=0.1, dropout_5_size=0.3):
     model = Sequential()
     
     # The Input Layer :
@@ -57,7 +56,7 @@ def build_model(train_x, batch_size=128, dropout_rate=0.3,
 
     # The Output Layer :
     model.add(Dense(units = 1, activation="sigmoid"))
-    model.add(Dropout(dropout_rate))
+    model.add(Dropout(dropout_5_size))
     model.compile(loss='mean_squared_error', optimizer='rmsprop', metrics = ['mse', 'mae'])
     print(model.summary)
     return model
@@ -81,7 +80,6 @@ def model_testing(test_x, test_y, model, history):
 
 @ex.config
 def cfg():
-    dropout_rate=0.3 
     epochs=30 
     batch_size=128
     dense_1_nodes=256 
@@ -92,25 +90,25 @@ def cfg():
     dropout_2_size=0.1 
     dropout_3_size=0.1 
     dropout_4_size=0.1
-#sacred: epochs, dropout-rate, batch size, 
+    dropout_5_size=0.3 
 
-def model_training(train_x, train_y, valid_x, valid_y, dropout_rate, epochs, batch_size,
+def model_training(train_x, train_y, valid_x, valid_y, epochs, batch_size,
                    dense_1_nodes, dense_2_nodes, dense_3_nodes, dense_4_nodes,
-                dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size):
-    model = build_model(train_x, batch_size, dropout_rate,
+                dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size, dropout_5_size):
+    model = build_model(train_x, batch_size, 
                          dense_1_nodes, dense_2_nodes, dense_3_nodes, dense_4_nodes,
-                dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size)
+                dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size, dropout_5_size)
     history = model.fit(train_x.values, train_y.values, epochs=epochs, batch_size=batch_size, verbose=2, validation_data=(valid_x.values, valid_y.values))
     model.save('model.h5')
     return model, history
 
 @ex.automain
-def main(dropout_rate, epochs, batch_size,
+def main(epochs, batch_size,
          dense_1_nodes, dense_2_nodes, dense_3_nodes, dense_4_nodes,
-         dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size):
+         dropout_1_size, dropout_2_size, dropout_3_size, dropout_4_size, dropout_5_size):
     
     train_x, train_y, test_x, test_y, valid_x, valid_y = load_model()
-    model, history = model_training(train_x, train_y, valid_x, valid_y, dropout_rate=dropout_rate, epochs=epochs, batch_size=batch_size,
+    model, history = model_training(train_x, train_y, valid_x, valid_y, epochs=epochs, batch_size=batch_size,
                                     dense_1_nodes=dense_1_nodes, dense_2_nodes=dense_2_nodes, dense_3_nodes=dense_3_nodes, dense_4_nodes=dense_4_nodes,
-                                    dropout_1_size=dropout_1_size, dropout_2_size=dropout_2_size, dropout_3_size=dropout_3_size, dropout_4_size=dropout_4_size)
+                                    dropout_1_size=dropout_1_size, dropout_2_size=dropout_2_size, dropout_3_size=dropout_3_size, dropout_4_size=dropout_4_size, dropout_5_size=dropout_5_size)
     model_testing(test_x, test_y, model, history)
