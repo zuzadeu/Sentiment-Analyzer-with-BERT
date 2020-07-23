@@ -1,0 +1,24 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Sentiment Analyzer</title>
+  <meta name="description" content="Calculate sentiment score of any text">
+  <meta name="author" content="Zyzus">
+
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <h1>Sentiment Analyzer</h1>
+  <h3>Provide sentiment score for your text.</h3>
+  <script src="index.js"></script>
+  <textarea id="text_input" name="text_input" spellcheck="false" rows="4" cols="50" placeholder="Please enter the text" oninput="textChanged(this.value)"></textarea>
+  <div id="circle">
+      <div id="score">---</div>
+  </div>
+</body>
+</html>
