@@ -9,7 +9,7 @@ services:
     ports:
       - 5005:5000
   bert:
-    build: ./bert-server/UNCASED_EN_BASE
+    build: ./bert-as-service/UNCASED_EN_BASE
     expose:
       - 5555
       - 5556
