@@ -1,4 +1,4 @@
-This is a Sentiment Analyzer project. It is described in my medium post.
+This is a Sentiment Analyzer project. It is described in [my medium post](https://towardsdatascience.com/sentiment-analyzer-with-bert-build-tune-deploy-da84c0f2366d).
 
 Requirenments are:
 
